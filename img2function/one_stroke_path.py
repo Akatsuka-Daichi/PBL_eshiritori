@@ -19,8 +19,8 @@ way = []
 ways = []
 init_x = 0.4
 init_y = 0
-draw_z = 0.1511
-stay_z = 0.1611
+draw_z = 0.100
+stay_z = 0.120
 size_picture = 0.15
 
 
