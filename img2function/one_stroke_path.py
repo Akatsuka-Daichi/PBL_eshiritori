@@ -20,7 +20,7 @@ ways = []
 init_x = 0.4
 init_y = 0
 draw_z = 0.100
-stay_z = 0.120
+stay_z = 0.107
 size_picture = 0.15
 
 
