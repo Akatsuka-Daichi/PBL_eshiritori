@@ -3,11 +3,13 @@ import cv2
 import numpy as np
 import time
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 from scipy.spatial import distance as dis
 import sys
+from sklearn import preprocessing
 
 argvs = sys.argv
 argc = len(argvs)
@@ -19,6 +21,7 @@ init_x = 0.4
 init_y = 0
 draw_z = 0.1511
 stay_z = 0.1611
+size_picture = 0.15
 
 
 class TSP:
@@ -101,18 +104,69 @@ class TSP:
 		f.close()
 
 	def path_save(self,out_path):
-		points = self.loc[ self.result ]
-		way = [0,90,0,0,init_x+points[0,0],init_y+points[0,1],stay_z]
-		ways.append(way)
+		#normalize to fit 150mm*150mm square and centeralize to (init_x, init_y)
+		points =np.array(self.loc[ self.result ])
+		max_xy = points.max(axis=0)
+		min_xy = points.min(axis=0)
+		retio=0
+		if (max_xy[0] - min_xy[0] > max_xy[1] - min_xy[1]) :
+			retio = size_picture / (max_xy[0] - min_xy[0])
+		else :
+			retio = size_picture / (max_xy[1] - min_xy[1])
+		points = (points - [(max_xy[0]+min_xy[0])/2, (max_xy[1]+min_xy[1])/2]) * retio + [init_x, init_y]
+		
+		#calculate L2norm between adjoining points
+		distances = []
+		for i in range (len(points)-1):
+		    distances.append(np.sqrt((points[i+1][0]-points[i][0])**2 + (points[i+1][1]-points[i][1])**2))
+		dis_median = np.median(distances)
+		redundant_edge = []
+		for i in range(len(distances)):
+			if distances[i] > 5 * dis_median:
+				redundant_edge.append([i, i+1])
+		# for i in range(len(duplicated_redundant_edge)-1):
+		# 	if duplicated_redundant_edge[i][1]== duplicated_redundant_edge[i+1][0]:
+
+		print (redundant_edge)
+		#generate trajectory
+		ways = []
+		ways.append([points[0, 0], points[0, 1], stay_z])
 		for i in range(len(points)):
-			way = [0,90,0,0]
-			way.append(init_x+points[i,0])
-			way.append(init_y+points[i,1])
-			way.append(draw_z)
-			ways.append(way)
-		way = [0,90,0,0,init_x+points[len(points),0],init_y+points[len(points),1],stay_z]
-		ways.append(way)
-		np.savetxt(out_path,ways,delimiter=',',fmt='%f')
+			counter = 0
+			for j in range(len(redundant_edge)):
+				if redundant_edge[j][0] == i:
+					counter += 1
+					ways.append([points[i, 0], points[i, 1], draw_z])
+					ways.append([points[i, 0], points[i, 1], stay_z])
+					break
+				# elif redundant_edge[j][1] == i:
+				# 	counter += 1
+				# 	ways.append([points[i, 0], points[i, 1], stay_z])
+				# 	ways.append([points[i, 0], points[i, 1], draw_z])
+				# 	break
+			if counter == 0:
+				ways.append([points[i, 0], points[i, 1], draw_z])
+		ways.append([points[len(points)-1, 0], points[len(points)-1, 1], stay_z])
+
+		print (len(ways))
+		print (len(points))
+		
+		f = open(out_path,"w")
+		for way in ways:
+			f.write("0,90,0,0," + str(way[0]) + "," + str(way[1]) + "," + str(way[2]) + "\n")
+		f.close()
+
+		transpose_ways = np.array(ways).transpose()
+		fig = plt.figure()
+		ax = Axes3D(fig)
+		ax.plot(transpose_ways[0], transpose_ways[1], transpose_ways[2])
+		# 軸ラベル
+		ax.set_xlabel('x')
+		ax.set_ylabel('y')
+		ax.set_zlabel('z')
+		# 表示
+		plt.show()
+
 	
 	def random_index(self,percentage):
 		n_percentage = len(percentage)
@@ -162,7 +216,7 @@ if __name__=="__main__":
 	save_edge_points(argvs[1],namae+"_edge_points.csv")
 	
 	tsp = TSP(path=namae+"_edge_points.csv",alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
-	tsp.solve(100)
+	tsp.solve(1)
 	tsp.path_save(namae+"_best_order.csv")
 	#tsp.save(namae+"_best_order.csv")
 	tsp.plot(tsp.result)
