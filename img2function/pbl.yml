@@ -96,5 +96,4 @@ dependencies:
     - sklearn==0.0
     - speechrecognition==3.8.1
     - threadpoolctl==2.1.0
-prefix: /home/akatsuka/anaconda3/envs/pbl
 
