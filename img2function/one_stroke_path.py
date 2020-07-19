@@ -10,6 +10,7 @@ import pandas as pd
 from scipy.spatial import distance as dis
 import sys
 from sklearn import preprocessing
+import time
 
 argvs = sys.argv
 argc = len(argvs)
@@ -19,8 +20,8 @@ way = []
 ways = []
 init_x = 0.4
 init_y = 0
-draw_z = 0.100
-stay_z = 0.107
+draw_z = 0.114
+stay_z = 0.130
 size_picture = 0.15
 
 
@@ -127,7 +128,7 @@ class TSP:
 		# for i in range(len(duplicated_redundant_edge)-1):
 		# 	if duplicated_redundant_edge[i][1]== duplicated_redundant_edge[i+1][0]:
 
-		print (redundant_edge)
+		#print (redundant_edge)
 		#generate trajectory
 		ways = []
 		ways.append([points[0, 0], points[0, 1], stay_z])
@@ -147,10 +148,6 @@ class TSP:
 			if counter == 0:
 				ways.append([points[i, 0], points[i, 1], draw_z])
 		ways.append([points[len(points)-1, 0], points[len(points)-1, 1], stay_z])
-
-		print (len(ways))
-		print (len(points))
-		
 		f = open(out_path,"w")
 		for way in ways:
 			f.write("0,90,0,0," + str(way[0]) + "," + str(way[1]) + "," + str(way[2]) + "\n")
@@ -160,11 +157,11 @@ class TSP:
 		fig = plt.figure()
 		ax = Axes3D(fig)
 		ax.plot(transpose_ways[0], transpose_ways[1], transpose_ways[2])
-		# 軸ラベル
+		
 		ax.set_xlabel('x')
 		ax.set_ylabel('y')
 		ax.set_zlabel('z')
-		# 表示
+		
 		plt.show()
 
 	
@@ -213,10 +210,11 @@ def save_edge_points(img_path,out_path):
 	f.close()
 
 if __name__=="__main__":
+	start_time = time.time()
 	save_edge_points(argvs[1],namae+"_edge_points.csv")
-	
 	tsp = TSP(path=namae+"_edge_points.csv",alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
 	tsp.solve(1)
+	print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
 	tsp.path_save(namae+"_best_order.csv")
 	#tsp.save(namae+"_best_order.csv")
 	tsp.plot(tsp.result)
