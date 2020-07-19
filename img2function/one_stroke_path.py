@@ -14,7 +14,7 @@ import time
 
 argvs = sys.argv
 argc = len(argvs)
-namae = argvs[1][0:len(argvs[1])-4]
+namae = "output/" + argvs[1][0:len(argvs[1])-4]
 
 way = []
 ways = []
@@ -211,7 +211,7 @@ def save_edge_points(img_path,out_path):
 
 if __name__=="__main__":
 	start_time = time.time()
-	save_edge_points(argvs[1],namae+"_edge_points.csv")
+	save_edge_points("pictures/"+argvs[1],namae+"_edge_points.csv")
 	tsp = TSP(path=namae+"_edge_points.csv",alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
 	tsp.solve(1)
 	print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
