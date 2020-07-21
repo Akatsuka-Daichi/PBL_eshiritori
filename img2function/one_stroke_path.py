@@ -190,8 +190,8 @@ class TSP:
 
 def save_edge_points(img_path,out_path):
 	img = cv2.imread(img_path)
-	edge = cv2.Canny(img,100,200)
-	
+	edge = cv2.Canny(img,100,200, 5)
+	#edge = cv2.Canny(img,100,200)
 	h,w = edge.shape
 	x = np.arange(w)
 	y = -(np.arange(h))
@@ -202,6 +202,7 @@ def save_edge_points(img_path,out_path):
 	Y_true = Y[ edge > 128 ]
 
 	index = np.array([X_true,Y_true]).T
+	print (index.shape)
 
 	f = open(out_path,"w")
 	f.write("x,y\n")
@@ -212,6 +213,7 @@ def save_edge_points(img_path,out_path):
 if __name__=="__main__":
 	start_time = time.time()
 	save_edge_points("pictures/"+argvs[1],namae+"_edge_points.csv")
+	exit()
 	tsp = TSP(path=namae+"_edge_points.csv",alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
 	tsp.solve(1)
 	print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
