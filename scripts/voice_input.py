@@ -93,4 +93,6 @@ def InterfaceVoice():
 
     return word
 
-InterfaceVoice()
+
+if __name__=="__main__":
+    InterfaceVoice()

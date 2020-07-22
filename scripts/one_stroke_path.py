@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import time
+import os
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -11,10 +12,8 @@ from scipy.spatial import distance as dis
 import sys
 from sklearn import preprocessing
 import time
+from pathlib import Path
 
-argvs = sys.argv
-argc = len(argvs)
-namae = "output/" + argvs[1][0:len(argvs[1])-4]
 
 way = []
 ways = []
@@ -27,73 +26,72 @@ size_picture = 0.15
 
 class TSP:
 	def __init__(self,path=None,alpha = 1.0,beta = 1.0,Q = 1.0,vanish_ratio = 0.95):
-		self.alpha = alpha					
-		self.beta = beta					
-		self.Q = Q							
-		self.vanish_ratio = vanish_ratio	
+		self.alpha = alpha
+		self.beta = beta
+		self.Q = Q
+		self.vanish_ratio = vanish_ratio
 		if path is not None:
 			self.set_loc(np.array(pd.read_csv(path)))
-	
+
 	def set_loc(self,locations):
-		self.loc = locations						
-		self.n_data = len(self.loc)						
-		self.dist = dis.squareform(dis.pdist(self.loc))	
-		self.weight = np.random.random_sample((self.n_data,self.n_data))+1.0	
-		self.result = np.arange(self.n_data)			
-		
+		self.loc = locations
+		self.n_data = len(self.loc)
+		self.dist = dis.squareform(dis.pdist(self.loc))
+		self.weight = np.random.random_sample((self.n_data,self.n_data))+1.0
+		self.result = np.arange(self.n_data)
+
 	def cost(self,order):
 		order2 = np.r_[order[1:],order[0]]
-		
-		return np.sum(tsp.dist[order,order2])
-	
+		return np.sum(self.dist[order,order2])
+
 	def plot(self,order=None):
 		if order is None:
 			plt.plot(self.loc[:,0],self.loc[:,1])
 		else:
 			plt.plot(self.loc[order,0],self.loc[order,1])
-		plt.savefig(namae+"_onestroke.png",bbox_inches="tight",pad_inches=0.0)
+		plt.savefig(image_name+"_onestroke.png",bbox_inches="tight",pad_inches=0.0)
 #		plt.show()
-	
+
 	def solve(self,n_agent=1000):
-		
-		order = np.zeros(self.n_data,np.int) 		
-		delta = np.zeros((self.n_data,self.n_data))	
-		
+
+		order = np.zeros(self.n_data,np.int)
+		delta = np.zeros((self.n_data,self.n_data))
+
 		for k in range(n_agent):
 			city = np.arange(self.n_data)
-			now_city = np.random.randint(self.n_data)	
-			
+			now_city = np.random.randint(self.n_data)
+
 			city = city[ city != now_city ]
 			order[0] = now_city
-			
+
 			for j in range(1,self.n_data):
 				upper = np.power(self.weight[now_city,city],self.alpha)*np.power(self.dist[now_city,city],-self.beta)
-				
-				evaluation = upper / np.sum(upper)				
-				percentage = evaluation / np.sum(evaluation)	
-				
-				index = self.random_index2(percentage)			
-				
+
+				evaluation = upper / np.sum(upper)
+				percentage = evaluation / np.sum(evaluation)
+
+				index = self.random_index2(percentage)
+
 				now_city = city[ index ]
 				city = city[ city != now_city ]
 				order[j] = now_city
-			
-			L = self.cost(order) 
-			
+
+			L = self.cost(order)
+
 			delta[:,:] = 0.0
 			c = self.Q / L
 			for j in range(self.n_data-1):
 				delta[order[j],order[j+1]] = c
 				delta[order[j+1],order[j]] = c
-			
-			self.weight *= self.vanish_ratio 
+
+			self.weight *= self.vanish_ratio
 			self.weight += delta
-			
+
 			if self.cost(self.result) > L:
 				self.result = order.copy()
-			
+
 			print("Agent ... %d,\t Now Cost %lf,\t Best Cost ... %lf" % (k,L,self.cost(self.result)))
-	
+
 		return self.result
 
 	def save(self,out_path):
@@ -104,7 +102,7 @@ class TSP:
 			f.write(str(points[i,0]) + "," + str(points[i,1])+"\n")
 		f.close()
 
-	def path_save(self,out_path):
+	def path_save(self,out_path, display_plot=True):
 		#normalize to fit 150mm*150mm square and centeralize to (init_x, init_y)
 		points =np.array(self.loc[ self.result ])
 		max_xy = points.max(axis=0)
@@ -115,7 +113,7 @@ class TSP:
 		else :
 			retio = size_picture / (max_xy[1] - min_xy[1])
 		points = (points - [(max_xy[0]+min_xy[0])/2, (max_xy[1]+min_xy[1])/2]) * retio + [init_x, init_y]
-		
+
 		#calculate L2norm between adjoining points
 		distances = []
 		for i in range (len(points)-1):
@@ -152,19 +150,19 @@ class TSP:
 		for way in ways:
 			f.write("0,90,0,0," + str(way[0]) + "," + str(way[1]) + "," + str(way[2]) + "\n")
 		f.close()
+		if display_plot == True:
+			transpose_ways = np.array(ways).transpose()
+			fig = plt.figure()
+			ax = Axes3D(fig)
+			ax.plot(transpose_ways[0], transpose_ways[1], transpose_ways[2])
 
-		transpose_ways = np.array(ways).transpose()
-		fig = plt.figure()
-		ax = Axes3D(fig)
-		ax.plot(transpose_ways[0], transpose_ways[1], transpose_ways[2])
-		
-		ax.set_xlabel('x')
-		ax.set_ylabel('y')
-		ax.set_zlabel('z')
-		
-		plt.show()
+			ax.set_xlabel('x')
+			ax.set_ylabel('y')
+			ax.set_zlabel('z')
 
-	
+			plt.show()
+
+
 	def random_index(self,percentage):
 		n_percentage = len(percentage)
 		arg = np.argsort(percentage)
@@ -179,7 +177,7 @@ class TSP:
 		arg = np.argsort(percentage)[::-1]
 		n_arg = min(n_percentage,10)
 		percentage = percentage / np.sum( percentage[arg] )
-		
+
 		while True:
 			index = np.random.randint(n_arg)
 			y = np.random.random()
@@ -190,8 +188,7 @@ class TSP:
 
 def save_edge_points(img_path,out_path):
 	img = cv2.imread(img_path)
-	edge = cv2.Canny(img,100,200, 5)
-	#edge = cv2.Canny(img,100,200)
+	edge = cv2.Canny(img,100,200)
 	h,w = edge.shape
 	x = np.arange(w)
 	y = -(np.arange(h))
@@ -202,21 +199,31 @@ def save_edge_points(img_path,out_path):
 	Y_true = Y[ edge > 128 ]
 
 	index = np.array([X_true,Y_true]).T
-	print (index.shape)
 
 	f = open(out_path,"w")
 	f.write("x,y\n")
 	for i in range(len(index)):
 		f.write(str(index[i,0]) + "," + str(index[i,1])+"\n")
 	f.close()
+	
 
 if __name__=="__main__":
 	start_time = time.time()
-	save_edge_points("pictures/"+argvs[1],namae+"_edge_points.csv")
-	exit()
-	tsp = TSP(path=namae+"_edge_points.csv",alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
+
+	argvs = sys.argv
+	image_file_name = argvs[1]
+	image_name = os.path.splitext(image_file_name)[0]
+	this_file_path = str(Path(__file__).parent)
+	image_path = this_file_path + "/../dic/" + image_file_name
+
+	output_path = this_file_path + "/../output/"
+
+	edge_points_path = output_path + image_name + "_edge_points.csv"
+	save_edge_points(image_path, edge_points_path)
+
+	tsp = TSP(edge_points_path,alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
 	tsp.solve(1)
 	print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
-	tsp.path_save(namae+"_best_order.csv")
-	#tsp.save(namae+"_best_order.csv")
-	tsp.plot(tsp.result)
+	tsp.path_save(output_path + image_name +"_best_order.csv")
+
+	# tsp.plot(tsp.result)

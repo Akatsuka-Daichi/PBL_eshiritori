@@ -1,2 +1,5 @@
 output/*
-
+!output/dummy.txt
+log/*
+!log/dummy.txt
+scripts/voice_tmp.wav
