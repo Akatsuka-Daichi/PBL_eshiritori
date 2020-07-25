@@ -17,11 +17,11 @@ from pathlib import Path
 
 way = []
 ways = []
-init_x = 0.4
-init_y = 0
+# init_x = 0.4
+# init_y = 0
 draw_z = 0.114
 stay_z = 0.130
-size_picture = 0.15
+# size_picture = 0.15
 
 
 class TSP:
@@ -102,8 +102,8 @@ class TSP:
 			f.write(str(points[i,0]) + "," + str(points[i,1])+"\n")
 		f.close()
 
-	def path_save(self,out_path, display_plot=True):
-		#normalize to fit 150mm*150mm square and centeralize to (init_x, init_y)
+	def path_save(self,out_path, center_picture, size_picture, display_plot=True):
+		#normalize to fit 150mm*150mm square and centeralize to [center_picture]
 		points =np.array(self.loc[ self.result ])
 		max_xy = points.max(axis=0)
 		min_xy = points.min(axis=0)
@@ -112,7 +112,7 @@ class TSP:
 			retio = size_picture / (max_xy[0] - min_xy[0])
 		else :
 			retio = size_picture / (max_xy[1] - min_xy[1])
-		points = (points - [(max_xy[0]+min_xy[0])/2, (max_xy[1]+min_xy[1])/2]) * retio + [init_x, init_y]
+		points = (points - [(max_xy[0]+min_xy[0])/2, (max_xy[1]+min_xy[1])/2]) * retio + center_picture
 
 		#calculate L2norm between adjoining points
 		distances = []
@@ -205,13 +205,10 @@ def save_edge_points(img_path,out_path):
 	for i in range(len(index)):
 		f.write(str(index[i,0]) + "," + str(index[i,1])+"\n")
 	f.close()
-	
 
-if __name__=="__main__":
+
+def interface_one_stroke_path(image_file_name, center_picture, size_picture, display_plot=True):
 	start_time = time.time()
-
-	argvs = sys.argv
-	image_file_name = argvs[1]
 	image_name = os.path.splitext(image_file_name)[0]
 	this_file_path = str(Path(__file__).parent)
 	image_path = this_file_path + "/../dic/" + image_file_name
@@ -224,6 +221,25 @@ if __name__=="__main__":
 	tsp = TSP(edge_points_path,alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
 	tsp.solve(1)
 	print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
-	tsp.path_save(output_path + image_name +"_best_order.csv")
+	tsp.path_save(output_path + image_name +"_best_order.csv", center_picture, size_picture, display_plot)
+
+
+if __name__=="__main__":
+	argvs = sys.argv
+	image_file_name = argvs[1]
+	interface_one_stroke_path(image_file_name, [0.4, 0], 0.15)
+	# image_name = os.path.splitext(image_file_name)[0]
+	# this_file_path = str(Path(__file__).parent)
+	# image_path = this_file_path + "/../dic/" + image_file_name
+
+	# output_path = this_file_path + "/../output/"
+
+	# edge_points_path = output_path + image_name + "_edge_points.csv"
+	# save_edge_points(image_path, edge_points_path)
+
+	# tsp = TSP(edge_points_path,alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
+	# tsp.solve(1)
+	# print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
+	# tsp.path_save(output_path + image_name +"_best_order.csv")
 
 	# tsp.plot(tsp.result)
