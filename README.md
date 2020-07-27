@@ -18,8 +18,6 @@ sudo apt-get install portaudio19-dev
     * この中に画像を蓄えておく。画像辞書。
 + output
     * ここにone_stroke_path.pyで生成したペン先の軌道点群などを出力する。
-+ pictures
-    * その内消す。
 
 ## 各ファイルの説明
 ### run_game.py（未完成）
