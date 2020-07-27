@@ -2,7 +2,7 @@ import sys
 import os
 import random
 
-path = "PBL_eshiritori/dic/"
+path = "./../dic/"
 
 def SearchUsableImagePath(prev_word: str, word_log: list, search_path = path) -> str:
     prev_word = prev_word.replace('ー','')
@@ -18,7 +18,7 @@ def SearchUsableImagePath(prev_word: str, word_log: list, search_path = path) ->
     connectable_image_list = [s for s in image_list if s.startswith(next_initial)]
     usable_image_list = list(set(connectable_image_list) - set(word_log))
     if not usable_image_list:
-        return None 
+        return None
     selected_image =  usable_image_list[random.randint(1,len(usable_image_list))-1]
     return search_path + [i for i in os.listdir(search_path) if selected_image in i][0]
 

@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from voice_input import VoiceRecodeAndRecongnize as vrar
 from one_stroke_path import interface_one_stroke_path
-#from image_search import image_search
+from image_search import SearchUsableImagePath
 
 
 LOG_FILE_DIR_PATH = str(Path(__file__).parent) + "/../log/"
@@ -44,18 +44,18 @@ def run_game(turn):
 
     while True:
         print ("+++++++++ 第" + str(turn_counter) + "ターン目 +++++++++")
-        # word = vrar()
-        word = "つくね"
+        word = vrar()
         if word in player_word_log:
             print ("すでに使った単語です。")
             sys.exit()
         elif re.fullmatch(r".*[\u3093]", word) != None:
             print ("語尾に「ん」があります。")
             sys.exit()
+
         player_word_log.append(word)
 
-        #image_search_path = image_search(word, npc_word_log)
-        image_search_path = "ねこ.png"
+        image_search_path = SearchUsableImagePath(word, npc_word_log)
+        # image_search_path = "ねこ.png"
         if image_search_path == None:
             print ("辞書に適切な画像が存在しません。")
             sys.exit()
@@ -64,15 +64,20 @@ def run_game(turn):
         center_picture = positioning(turn_counter,center_paper, size_picture, width)
         image_file_name = os.path.basename(image_search_path)
         image_name = os.path.splitext(image_file_name)[0]
+        print (image_name)
         npc_word_log.append(image_name)
-        interface_one_stroke_path(image_file_name, center_picture, size_picture, True)
+        trajectory_path = interface_one_stroke_path(image_file_name, center_picture, size_picture, True)
 
 
         if turn_counter >= turn:
+            print ("ひきわけ規定ターンが終了しました。")
             break
         turn_counter +=1
-    print(npc_word_log)
-    print (player_word_log)
+
+    print ("----------------------------------------")
+    print ("プレイヤー側の回答履歴：" + str(player_word_log))
+    print ("システム側の回答履歴：" + str(npc_word_log))
+    print ("----------------------------------------")
 
 
 if __name__=="__main__":
