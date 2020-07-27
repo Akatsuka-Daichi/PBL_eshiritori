@@ -223,23 +223,10 @@ def interface_one_stroke_path(image_file_name, center_picture, size_picture, dis
 	print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
 	tsp.path_save(output_path + image_name +"_best_order.csv", center_picture, size_picture, display_plot)
 
+	return output_path + image_name +"_best_order.csv"
+
 
 if __name__=="__main__":
 	argvs = sys.argv
 	image_file_name = argvs[1]
 	interface_one_stroke_path(image_file_name, [0.4, 0], 0.15)
-	# image_name = os.path.splitext(image_file_name)[0]
-	# this_file_path = str(Path(__file__).parent)
-	# image_path = this_file_path + "/../dic/" + image_file_name
-
-	# output_path = this_file_path + "/../output/"
-
-	# edge_points_path = output_path + image_name + "_edge_points.csv"
-	# save_edge_points(image_path, edge_points_path)
-
-	# tsp = TSP(edge_points_path,alpha=1.0,beta=16.0,Q=1.0e3,vanish_ratio = 0.8)
-	# tsp.solve(1)
-	# print ("processing time : " + str(round(time.time()-start_time, 2)) + " seconds")
-	# tsp.path_save(output_path + image_name +"_best_order.csv")
-
-	# tsp.plot(tsp.result)

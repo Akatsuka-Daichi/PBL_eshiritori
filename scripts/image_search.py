@@ -5,13 +5,17 @@ import random
 path = "PBL_eshiritori/dic/"
 
 def SearchUsableImagePath(prev_word: str, word_log: list, search_path = path) -> str:
+    prev_word = prev_word.replace('ー','')
+    prev_word = prev_word.replace('ゃ','や')
+    prev_word = prev_word.replace('ゅ','ゆ')
+    prev_word = prev_word.replace('ょ','よ')
+    prev_word = prev_word.replace('っ','つ')
     next_initial = prev_word[-1]
-    search_path = search_path + next_initial
-    if not os.path.exists(search_path):
-        return None 
-    connectable_image_list = []
+#    search_path = search_path + next_initial
+    image_list = []
     for p in os.listdir(search_path):
-        connectable_image_list.append(os.path.splitext(os.path.basename(p))[0])
+        image_list.append(os.path.splitext(os.path.basename(p))[0])
+    connectable_image_list = [s for s in image_list if s.startswith(next_initial)]
     usable_image_list = list(set(connectable_image_list) - set(word_log))
     if not usable_image_list:
         return None 
