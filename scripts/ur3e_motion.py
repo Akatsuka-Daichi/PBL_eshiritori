@@ -594,11 +594,9 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## END_SUB_TUTORIAL
 
 
-def move_ur3e(filepath):
+def zero_to_wait_position(flag):
   #順々に動作させ，初期位置に移動させる場合は"1"
   #その他は一度に初期位置に移動
-  flag = 1
-
   try:
     print "============ Press `Enter` プログラム開始(press ctrl-d to exit) ..."
     raw_input()
@@ -632,24 +630,21 @@ def move_ur3e(filepath):
       print "============ Press `Enter` 動作実行(4/5) ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
+
       print "============ Press `Enter` 初期位置の動作計画(5-1/5)待ち状態 ..."
       raw_input()
       cartesian_plan = tutorial.go_to_joint_initialstate5()
       print "============ Press `Enter` 動作実行(5-1/5) ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
+
       print "============ Press `Enter` 初期位置の動作計画(5-2/5)IK解き直し ..."
       raw_input()
       cartesian_plan = tutorial.go_to_joint_initialstate5()
       print "============ Press `Enter` 動作実行(5-2/5) ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
-      # print "============ Press `Enter` 初期位置の動作計画(6/4) ..."
-      # raw_input()
-      # cartesian_plan = tutorial.go_to_joint_initialstate6()
-      # print "============ Press `Enter` 動作実行(6/4) ..."
-      # raw_input()
-      # tutorial.execute_plan(cartesian_plan)
+
     else:
       print "============ Press `Enter` 初期位置の動作計画 ..."
       raw_input()
@@ -657,17 +652,18 @@ def move_ur3e(filepath):
       print "============ Press `Enter` 動作実行 ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
+  except rospy.ROSInterruptException:
+    return
+  except KeyboardInterrupt:
+    return
 
 
+def move_ur3e(filepath, turn):
 
-    # print "============ Press `Enter` 動作開始位置に移動する動作計画 ..."
-    # raw_input()
-    # cartesian_plan, fraction = tutorial.plan_touching_start_point(filepath)
-    # print "============ Press `Enter` 動作開始位置に移動 ..."
-    # raw_input()
-    # tutorial.execute_plan(cartesian_plan)
+  if turn == 1:
+    zero_to_wait_position(1)
 
-
+  try:
     print "============ Press `Enter` 撫で動作の動作計画(stay position) ..."
     raw_input()
     cartesian_plan, fraction = tutorial.plan_touching_motion2(filepath)
@@ -696,8 +692,6 @@ def move_ur3e(filepath):
     raw_input()
     tutorial.execute_plan(cartesian_plan)
 
-
-
     print "============ Press `Enter` 初期位置の動作計画(5/4) ..."
     raw_input()
     cartesian_plan = tutorial.go_to_joint_initialstate5()
@@ -705,18 +699,13 @@ def move_ur3e(filepath):
     raw_input()
     tutorial.execute_plan(cartesian_plan)
 
-    # print "============ Press `Enter` 初期位置に戻る動作計画 ..."
-    # raw_input()
-    # cartesian_plan = tutorial.go_to_joint_initialstate4()
-    # print "============ Press `Enter` 動作実行 ..."
-    # raw_input()
-    # tutorial.execute_plan(cartesian_plan)
-
     print "============ Python tutorial demo complete!"
   except rospy.ROSInterruptException:
     return
   except KeyboardInterrupt:
     return
+
+
 
 if __name__ == '__main__':
   filepath = "/home/akatsuka/catkin_ws/src/ur3e_motion_practice/src/cat_best_order.csv"
