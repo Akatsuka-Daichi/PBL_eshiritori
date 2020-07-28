@@ -106,6 +106,15 @@ class MoveGroupPythonIntefaceTutorial(object):
     self.eef_link = eef_link
     self.group_names = group_names
 
+  def go_to_joint_initialstate(self, joint):
+    group = self.group
+    ## 各角度を指定する
+    joint_goal = group.get_current_joint_values()
+    joint_goal = joint
+    (plan) = group.plan(joint_goal)
+
+    return plan
+
   def go_to_joint_initialstate1(self):
     group = self.group
 
@@ -121,7 +130,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     (plan) = group.plan(joint_goal)
 
     return plan
-  
+
   def go_to_joint_initialstate2(self):
     group = self.group
 
@@ -136,7 +145,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     (plan) = group.plan(joint_goal)
 
     return plan
-  
+
   def go_to_joint_initialstate3(self):
     group = self.group
 
@@ -151,7 +160,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     (plan) = group.plan(joint_goal)
 
     return plan
-  
+
   def go_to_joint_initialstate4(self):
     group = self.group
 
@@ -162,7 +171,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     joint_goal[3] = math.radians(-110)#4
     joint_goal[4] = 0#5
     joint_goal[5] = 0#6
-    
+
     (plan) = group.plan(joint_goal)
 
     return plan
@@ -177,7 +186,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     joint_goal[3] = math.radians(-110)#4
     joint_goal[4] = math.radians(-90)#5
     joint_goal[5] = 0#6
-    
+
     (plan) = group.plan(joint_goal)
 
     return plan
@@ -192,7 +201,7 @@ class MoveGroupPythonIntefaceTutorial(object):
       joint_goal[3] = math.radians(-110)#4
       joint_goal[4] = math.radians(-90)#5
       joint_goal[5] = 0#6
-      
+
       (plan) = group.plan(joint_goal)
 
       return plan
@@ -322,11 +331,11 @@ class MoveGroupPythonIntefaceTutorial(object):
     # We want the Cartesian path to be interpolated at a resolution of 1 cm
     # which is why we will specify 0.01 as the eef_step in Cartesian
     # translation.  We will disable the jump threshold by setting it to 0.0 disabling:
-    # 動作計画を行う 	
+    # 動作計画を行う
     (plan, fraction) = group.compute_cartesian_path(
                                        waypoints,   # waypoints to follow
                                        0.001,        # eef_step
-                                       0.0)         # jump_threshold	
+                                       0.0)         # jump_threshold
 
 
     #動作スピードコントロール,動作速度要因0-1の間で調整
@@ -357,7 +366,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     startposition = wpose
     print(startposition)
 
-   
+
 
     sx = 0.29
     sy = -0.108
@@ -365,7 +374,7 @@ class MoveGroupPythonIntefaceTutorial(object):
 
     for i in range(0,1):
       euler = np.zeros(3)
-      
+
       eulerZ = data[i,0]
       eulerY = data[i,1]
       eulerZZ = data[i,2]
@@ -397,11 +406,11 @@ class MoveGroupPythonIntefaceTutorial(object):
     # We want the Cartesian path to be interpolated at a resolution of 1 cm
     # which is why we will specify 0.01 as the eef_step in Cartesian
     # translation.  We will disable the jump threshold by setting it to 0.0 disabling:
-    # 動作計画を行う 	
+    # 動作計画を行う
     (plan, fraction) = group.compute_cartesian_path(
                                        waypoints,   # waypoints to follow
                                        0.001,        # eef_step
-                                       0.0)         # jump_threshold	
+                                       0.0)         # jump_threshold
 
 
     #動作スピードコントロール,動作速度要因0-1の間で調整
@@ -412,7 +421,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     plan2 = group.retime_trajectory(robot_state, plan, velocity_scaling_factor = 0.01)
     # Note: We are just planning, not asking move_group to actually move the robot yet:
 
-   
+
     return plan2, fraction
 
 
@@ -433,7 +442,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     startposition = wpose
     print(startposition)
 
-    
+
 
     sx = 0.29
     sy = -0.108
@@ -441,7 +450,7 @@ class MoveGroupPythonIntefaceTutorial(object):
 
     for i in range(0,size[0]-1):
       euler = np.zeros(3)
-      
+
       eulerZ = data[i,0]
       eulerY = data[i,1]
       eulerZZ = data[i,2]
@@ -473,11 +482,11 @@ class MoveGroupPythonIntefaceTutorial(object):
     # We want the Cartesian path to be interpolated at a resolution of 1 cm
     # which is why we will specify 0.01 as the eef_step in Cartesian
     # translation.  We will disable the jump threshold by setting it to 0.0 disabling:
-    # 動作計画を行う 	
+    # 動作計画を行う
     (plan, fraction) = group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
                                         0.001,        # eef_step
-                                        0.0)         # jump_threshold	
+                                        0.0)         # jump_threshold
 
 
     #動作スピードコントロール,動作速度要因0-1の間で調整
@@ -488,7 +497,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     plan2 = group.retime_trajectory(robot_state, plan, velocity_scaling_factor = 0.01)
     # Note: We are just planning, not asking move_group to actually move the robot yet:
 
-    
+
     return plan2, fraction
 
   def plan_touching_motion4(self,file):
@@ -508,7 +517,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     startposition = wpose
     print(startposition)
 
-    
+
 
     sx = 0.29
     sy = -0.108
@@ -516,7 +525,7 @@ class MoveGroupPythonIntefaceTutorial(object):
 
     for i in range(size[0]-1,size[0]):
       euler = np.zeros(3)
-      
+
       eulerZ = data[i,0]
       eulerY = data[i,1]
       eulerZZ = data[i,2]
@@ -548,11 +557,11 @@ class MoveGroupPythonIntefaceTutorial(object):
     # We want the Cartesian path to be interpolated at a resolution of 1 cm
     # which is why we will specify 0.01 as the eef_step in Cartesian
     # translation.  We will disable the jump threshold by setting it to 0.0 disabling:
-    # 動作計画を行う 	
+    # 動作計画を行う
     (plan, fraction) = group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
                                         0.001,        # eef_step
-                                        0.0)         # jump_threshold	
+                                        0.0)         # jump_threshold
 
 
     #動作スピードコントロール,動作速度要因0-1の間で調整
@@ -563,7 +572,7 @@ class MoveGroupPythonIntefaceTutorial(object):
     plan2 = group.retime_trajectory(robot_state, plan, velocity_scaling_factor = 0.01)
     # Note: We are just planning, not asking move_group to actually move the robot yet:
 
-    
+
     return plan2, fraction
 
 
@@ -584,14 +593,10 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## first waypoint in the `RobotTrajectory`_ or ``execute()`` will fail
     ## END_SUB_TUTORIAL
 
-def main():
+
+def zero_to_wait_position(flag):
   #順々に動作させ，初期位置に移動させる場合は"1"
   #その他は一度に初期位置に移動
-  flag = 1
-
-  #ファイルが格納されたパスを指定
-  filepath = "/home/akatsuka/catkin_ws/src/ur3e_motion_practice/src/cat_best_order.csv"
-
   try:
     print "============ Press `Enter` プログラム開始(press ctrl-d to exit) ..."
     raw_input()
@@ -625,24 +630,21 @@ def main():
       print "============ Press `Enter` 動作実行(4/5) ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
+
       print "============ Press `Enter` 初期位置の動作計画(5-1/5)待ち状態 ..."
       raw_input()
       cartesian_plan = tutorial.go_to_joint_initialstate5()
       print "============ Press `Enter` 動作実行(5-1/5) ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
+
       print "============ Press `Enter` 初期位置の動作計画(5-2/5)IK解き直し ..."
       raw_input()
       cartesian_plan = tutorial.go_to_joint_initialstate5()
       print "============ Press `Enter` 動作実行(5-2/5) ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
-      # print "============ Press `Enter` 初期位置の動作計画(6/4) ..."
-      # raw_input()
-      # cartesian_plan = tutorial.go_to_joint_initialstate6()
-      # print "============ Press `Enter` 動作実行(6/4) ..."
-      # raw_input()
-      # tutorial.execute_plan(cartesian_plan)
+
     else:
       print "============ Press `Enter` 初期位置の動作計画 ..."
       raw_input()
@@ -650,17 +652,18 @@ def main():
       print "============ Press `Enter` 動作実行 ..."
       raw_input()
       tutorial.execute_plan(cartesian_plan)
+  except rospy.ROSInterruptException:
+    return
+  except KeyboardInterrupt:
+    return
 
 
+def move_ur3e(filepath, turn):
 
-    # print "============ Press `Enter` 動作開始位置に移動する動作計画 ..."
-    # raw_input()
-    # cartesian_plan, fraction = tutorial.plan_touching_start_point(filepath)
-    # print "============ Press `Enter` 動作開始位置に移動 ..."
-    # raw_input()
-    # tutorial.execute_plan(cartesian_plan)
+  if turn == 1:
+    zero_to_wait_position(1)
 
-
+  try:
     print "============ Press `Enter` 撫で動作の動作計画(stay position) ..."
     raw_input()
     cartesian_plan, fraction = tutorial.plan_touching_motion2(filepath)
@@ -688,22 +691,13 @@ def main():
     print "============ Press `Enter` 撫で動作実行 ..."
     raw_input()
     tutorial.execute_plan(cartesian_plan)
-    
-    
-    
+
     print "============ Press `Enter` 初期位置の動作計画(5/4) ..."
     raw_input()
     cartesian_plan = tutorial.go_to_joint_initialstate5()
     print "============ Press `Enter` 動作実行(5/4) ..."
     raw_input()
     tutorial.execute_plan(cartesian_plan)
-    
-    # print "============ Press `Enter` 初期位置に戻る動作計画 ..."
-    # raw_input()
-    # cartesian_plan = tutorial.go_to_joint_initialstate4()
-    # print "============ Press `Enter` 動作実行 ..."
-    # raw_input()
-    # tutorial.execute_plan(cartesian_plan)
 
     print "============ Python tutorial demo complete!"
   except rospy.ROSInterruptException:
@@ -711,5 +705,8 @@ def main():
   except KeyboardInterrupt:
     return
 
+
+
 if __name__ == '__main__':
-  main()
+  filepath = "/home/akatsuka/catkin_ws/src/ur3e_motion_practice/src/cat_best_order.csv"
+  move_ur3e()
