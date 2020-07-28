@@ -7,6 +7,7 @@ from pathlib import Path
 from voice_input import VoiceRecodeAndRecongnize as vrar
 from one_stroke_path import interface_one_stroke_path
 from image_search import SearchUsableImagePath
+from ur3e_motion import move_ur3e
 
 
 LOG_FILE_DIR_PATH = str(Path(__file__).parent) + "/../log/"
@@ -68,6 +69,8 @@ def run_game(turn):
         npc_word_log.append(image_name)
         trajectory_path = interface_one_stroke_path(image_file_name, center_picture, size_picture, True)
 
+        # move ur3e
+        move_ur3e(trajectory_path)
 
         if turn_counter >= turn:
             print ("ひきわけ規定ターンが終了しました。")
